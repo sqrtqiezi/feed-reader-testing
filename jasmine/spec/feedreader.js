@@ -9,6 +9,7 @@ $(function () {
       allFeeds.forEach(function (item) {
         expect(item.url).toBeDefined()
         expect(item.url).not.toBe(null)
+        expect(item.url).not.toBe('')
       })
     })
 
@@ -16,6 +17,7 @@ $(function () {
       allFeeds.forEach(function (item) {
         expect(item.name).toBeDefined()
         expect(item.name).not.toBe(null)
+        expect(item.name).not.toBe('')
       })
     })
   })
@@ -47,33 +49,39 @@ $(function () {
     beforeEach(function (done) {
       // 定义 spy ，帮助测试 loadFeed 调用情况
       spyOn(window, 'loadFeed').and.callThrough()
-      loadFeed(0, function () {
-        done()
-      })
+      loadFeed(0, done)
     })
 
-    it('has entries', function (done) {
+    it('has entries', function () {
       expect(loadFeed).toHaveBeenCalled()
       expect($('.feed .entry').length).toBeGreaterThan(0)
-      done()
     })
   })
 
   describe('New Feed Selection', function () {
-    var originalArticleTitle
-    
+    var originalArticleTitle, originalTimeout
+
+    beforeAll(function () {
+      // 网络好慢，让子弹多飞一会儿
+      originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000
+    })
+
     beforeEach(function (done) {
-      originalArticleTitle = $('.feed .entry h2').eq(0).text()
       // 加载新的 Feed
-      loadFeed(1, function () {
-        done()
+      loadFeed(0, function () {
+        originalArticleTitle = $('.feed .entry h2').eq(0).text()
+        loadFeed(1, done)
       })
     })
 
-    it('entries changed', function (done) {
+    it('entries changed', function () {
       // 判断第一条 article 标题是否变化
       expect($('.feed .entry h2').eq(0).text()).not.toBe(originalArticleTitle)
-      done()
+    })
+
+    afterAll(function () {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout
     })
   })
 

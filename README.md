@@ -7,25 +7,27 @@
 ## 评审标准 
 [https://review.udacity.com/#!/projects/3442558598/rubric](https://review.udacity.com/#!/projects/3442558598/rubric)
 
-## 我如何完成这个项目
-1. 上一下 javascript Testing [课程](https://www.udacity.com/course/ud549)
-2. 下载[必要的项目资源](http://github.com/udacity/frontend-nanodegree-feedreader)
-3. 在浏览器里面查看一下应用的功能
-4. 查看项目的 HTMl (**./index.html**), CSS (**./css/style.css**) 和 JavaScript (**./js/app.js**) 文件来对项目的工作原理有一个基本的了解。
-5. 查看 Jasmine spec 文件 **./jasmine/spec/feedreader.js** 然后翻阅阅读 [Jasmine 文档](http://jasmine.github.io)。
-6. 编辑 **./js/app.js** 里面的 `allFeeds` 变量使给出的测试通不过，然后观察Jasmine是怎么展示你应用的错误信息的。
-7. 将 `allFeeds` 变量返回给一个短暂的状态。
-8. 编写一个测试遍历 allFeeds 对象里面的所有的源来保证有链接字段而且链接不是空的。
-9. 编写一个测试遍历 allFeeds 对象里面的所有的源来保证有名字字段而且不是空的。
-10. 写一个叫做 `"The menu"` 的测试用例
-11. 写一个测试用例保证菜单元素默认是隐藏的。你需要分析 html 和 css 来搞清楚我们是怎么实现隐藏/展示菜单元素的。
-12. 写一个测试用例保证当菜单图标被点击的时候菜单会切换可见状态。这个测试应该包含两个 expectation ： 党点击图标的时候菜单是否显示，再次点击的时候是否隐藏。
-13. 写一个叫做 `"Initial Entries"` 的测试用例
-14. 写一个测试保证 `loadFeed` 函数被调用而且工作正常，即在 `.feed` 容器元素里面至少有一个 `.entry` 的元素。
-15. 写一个叫做 `"New Feed Selection"` 的测试用例
-16. 写一个测试保证当用 `loadFeed` 函数加载一个新源的时候内容会真的改变。
-17. 每个测试都不应该依赖别的测试的结果。
-18. 回调函数应该用来保证在测试运行之前源已经被加载。
-19. 实现未定义变量和数组越界的错误处理。
-20. 当完成所有任务的时候，所有的测试也应该通过。
-21. 写一个 README 文件来详细说明运行应用的步骤。如果你已经添加了额外的测试（来提高测试覆盖率），请提供文档说明这些未来的功能点是什么和你编写的测试在检查什么。
+## 如何运行
+项目包含 Jasmine Standalone 的所有文件，在浏览器中打开 index.html 即可运行测试。
+
+## 测试用例
+
+* RSS Feeds
+    * 「are defined」 断言全局数组对象 allFeeds 已经定义，且长度不为 0
+    * 「everyone has valid link」 断言 allFeeds 的所有成员都有属性 url，且 url 不为 null 或空字符串
+    * 「everyone has valid name」 断言 allFeeds 的所有成员都有属性 name，且 name 不为 null 或空字符串
+
+* The Menu 
+    * 在 describe 作用域声明变量 $trigger、$body，并在 beforeEach 为变量复制，使代码简洁一些
+    * 「are invisibled」 观察样式文件可知 app 通过 body 上是否有类名 menu-hidden 来控制 Menu 的隐藏。断言初始时，body 上是否有 menu-hidden 类
+    * 「should toggle class show when click event fired」 在 menu-icon-link 链接上先后触发两次 click 事件，断言 body 移除 menu-hidden 类，并再次添加
+
+* Initial Entries
+    * Jasmine 的异步测试机制是：当 beforeAll, afterAll, beforeEach, afterEach, 以及 it 的回调函数中有异步操作时，需要向回调函数传入 done 函数，并且在异步操作结束处调用 done()。（我在这里一开始的理解有误，以为当一个 suite 中有异步操作的时候，suite 中所有 it 函数都需要传入 done，在第一次审阅之后，以及群里同学都提醒下，重新阅读文档，纠正了误解。
+    * 在 beforeEach 中异步调用 loadFeed 函数
+    * 「has entries」 断言 .feed 包含 .entry 的子节点个数大于 0
+
+* New Feed Selection
+    * 测试当重新执行 loadFeed 当时候，entry 列表会发生改变。loadFeed 需要执行两次，且国内网路对 feedburner.com 并不友好，我在 beforeAll 中修改 jasmine 的异步超时时间 DEFAULT_TIMEOUT_INTERVAL 为 20 秒
+    * 在第一次 loadFeed 的回调函数中保存 entry 列表的第一篇文章标题，并再次调用 loadFeed ，传入不同的源地址，回调为 done 函数
+    * 「entries changed」 断言此时的 entry 列表第一篇文章标题，与保存的文章标题不同

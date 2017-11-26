@@ -5,19 +5,20 @@ $(function () {
       expect(allFeeds.length).not.toBe(0)
     })
 
+    function sameDetection (item) {
+      expect(item.name).not.toBe(null)
+      expect(item.name).not.toBe('')
+    }
+
     it('everyone has valid link', function () {
       allFeeds.forEach(function (item) {
-        expect(item.url).toBeDefined()
-        expect(item.url).not.toBe(null)
-        expect(item.url).not.toBe('')
+        sameDetection(item)
       })
     })
 
     it('everyone has valid name', function () {
       allFeeds.forEach(function (item) {
-        expect(item.name).toBeDefined()
-        expect(item.name).not.toBe(null)
-        expect(item.name).not.toBe('')
+        sameDetection(item)
       })
     })
   })

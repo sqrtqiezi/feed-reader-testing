@@ -6,19 +6,22 @@ $(function () {
     })
 
     function sameDetection (item) {
-      expect(item.name).not.toBe(null)
-      expect(item.name).not.toBe('')
+      expect(item).toBeDefined()
+      expect(item).not.toBe(null)
+      expect(item).not.toBe('')
     }
 
     it('everyone has valid link', function () {
       allFeeds.forEach(function (item) {
-        sameDetection(item)
+        sameDetection(item.url)
+        var regularExpressionUrl = /^((ht|f)tps?):\/\/([\w\-]+(\.[\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/ // 检查 URL 格式是否正确的正规表达式
+        expect(item.url).toMatch(regularExpressionUrl) // 检查格式
       })
     })
 
     it('everyone has valid name', function () {
       allFeeds.forEach(function (item) {
-        sameDetection(item)
+        sameDetection(item.name)
       })
     })
   })
